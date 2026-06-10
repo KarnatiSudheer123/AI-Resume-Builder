@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Resume Builder — Craft Your Future</title>
+  <meta name="description" content="A modern AI-powered resume builder with live preview, templates, and instant PDF export." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+</head>
+<body>
+
+  <!-- Animated background -->
+  <canvas id="particles"></canvas>
+
+  <!-- Notifications -->
+  <div id="toast-container" class="toast-container"></div>
+  
+  <!-- Navbar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#home" class="brand">
+        <span class="brand-mark">AI</span>
+        <span class="brand-text">Resume<span>Forge</span></span>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#builder">Resume Builder</a>
+        <a href="#templates">Templates</a>
+        <a href="#preview">Preview</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+  <main>
+    
+    <!-- HERO -->
+    <section id="home" class="hero">
+      <div class="hero-content">
+        <span class="eyebrow">AI-Powered • Recruiter Approved</span>
+        <h1 class="hero-title">
+          <span id="typed"></span><span class="caret">|</span>
+        </h1>
+        <p class="tagline">Craft a resume that opens doors. Smart suggestions, beautiful templates, and a one-click PDF — all powered by AI.</p>
+        <div class="hero-cta">
+          <a href="#builder" class="btn btn-primary">Get Started</a>
+          <a href="#templates" class="btn btn-ghost">Explore Templates</a>
+        </div>
+        <div class="hero-stats">
+          <div><strong>120K+</strong><span>Resumes Built</span></div>
+          <div><strong>4.9★</strong><span>User Rating</span></div>
+          <div><strong>30s</strong><span>To First Draft</span></div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- ABOUT -->
+    <section id="about" class="section reveal">
+      <div class="section-head">
+        <h2>How it works</h2>
+        <p>Three steps to a recruiter-ready resume — no formatting headaches.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card glass">
+          <div class="icon">✦</div>
+          <h3>1. Tell us about you</h3>
+          <p>Fill a friendly form. We autosave every keystroke, so you never lose progress.</p>
+        </div>
+        <div class="card glass">
+          <div class="icon">✺</div>
+          <h3>2. AI writes your summary</h3>
+          <p>Our generator turns your raw details into a sharp professional summary.</p>
+        </div>
+        <div class="card glass">
+          <div class="icon">✸</div>
+          <h3>3. Pick a template & export</h3>
+          <p>Switch templates instantly. Print or download a pixel-perfect PDF.</p>
+        </div>
+      </div>
+      <div class="grid grid-4 mt-lg">
+        <div class="feature glass"><h4>Auto-Save</h4><p>Local storage keeps everything safe.</p></div>
+        <div class="feature glass"><h4>Live Preview</h4><p>See changes the moment you type.</p></div>
+        <div class="feature glass"><h4>Resume Score</h4><p>Strength meter shows what to improve.</p></div>
+        <div class="feature glass"><h4>PDF Export</h4><p>One click, recruiter-ready file.</p></div>
+      </div>
+    </section>
+    
+    <!-- BUILDER -->
+    <section id="builder" class="section reveal">
+      <div class="section-head">
+        <h2>Resume Builder</h2>
+        <p>Fill out each section. Your live preview updates instantly.</p>
+      </div>
+      <div class="builder-meta glass">
+        <div class="meter">
+          <div class="meter-label">Profile Completion <span id="completionPct">0%</span></div>
+          <div class="meter-bar"><div class="meter-fill" id="completionBar"></div></div>
+        </div>
+        <div class="meter">
+          <div class="meter-label">Resume Strength <span id="strengthLabel">Weak</span></div>
+          <div class="meter-bar"><div class="meter-fill meter-fill--strength" id="strengthBar"></div></div>
+        </div>
+      </div>
+      <form id="resumeForm" class="builder-grid" autocomplete="off">
+        
+        <!-- Personal -->
+        <fieldset class="card glass">
+          <legend>Personal Information</legend>
+          <div class="row-2">
+            <label>Full Name<input type="text" name="fullName" required /></label>
+            <label>Job Title<input type="text" name="jobTitle" placeholder="e.g. Frontend Developer" /></label>
+          </div>
+          <div class="row-2">
+            <label>Email<input type="email" name="email" required /></label>
+            <label>Phone<input type="tel" name="phone" /></label>
+          </div>
+          <label>Address<input type="text" name="address" /></label>
+          <div class="row-2">
+            <label>LinkedIn<input type="url" name="linkedin" placeholder="https://linkedin.com/in/..." /></label>
+            <label>GitHub<input type="url" name="github" placeholder="https://github.com/..." /></label>
+          </div>
+        </fieldset>
+        
+        <!-- Objective + AI -->
+        <fieldset class="card glass">
+          <legend>Career Objective</legend>
+          <label>Write your own, or generate with AI
+            <textarea name="objective" rows="4" placeholder="A short statement about your goals..."></textarea>
+          </label>
+          <button type="button" id="generateSummary" class="btn btn-primary btn-sm">✨ Generate AI Summary</button>
+          <div class="ai-preview" id="aiPreview" hidden>
+            <span class="ai-label">AI Summary</span>
+            <p id="aiSummaryText"></p>
+            <button type="button" id="useSummary" class="btn btn-ghost btn-sm">Use this summary</button>
+          </div>
+        </fieldset>
+        
+        <!-- Education -->
+        <fieldset class="card glass">
+          <legend>Education</legend>
+          <div id="educationList" class="dyn-list"></div>
+          <button type="button" class="btn btn-ghost btn-sm" data-add="education">+ Add Education</button>
+        </fieldset>
+        
+        <!-- Skills -->
+        <fieldset class="card glass">
+          <legend>Skills</legend>
+          <div class="skill-input-row">
+            <input type="text" id="skillSearch" placeholder="Search or type a skill..." />
+            <button type="button" id="addSkillBtn" class="btn btn-primary btn-sm">Add</button>
+          </div>
+          <div class="skill-suggestions" id="skillSuggestions"></div>
+          <div class="chips" id="skillChips"></div>
+        </fieldset>
+        
+        <!-- Certifications -->
+        <fieldset class="card glass">
+          <legend>Certifications</legend>
+          <label><textarea name="certifications" rows="3" placeholder="One per line"></textarea></label>
+        </fieldset>
+        
+        <!-- Experience -->
+        <fieldset class="card glass">
+          <legend>Experience</legend>
+          <div id="experienceList" class="dyn-list"></div>
+          <button type="button" class="btn btn-ghost btn-sm" data-add="experience">+ Add Experience</button>
+        </fieldset>
+        
+        <!-- Projects -->
+        <fieldset class="card glass">
+          <legend>Projects</legend>
+          <div id="projectsList" class="dyn-list"></div>
+          <button type="button" class="btn btn-ghost btn-sm" data-add="project">+ Add Project</button>
+        </fieldset>
+        
+        <!-- Achievements + Languages -->
+        <fieldset class="card glass">
+          <legend>Achievements</legend>
+          <label><textarea name="achievements" rows="3" placeholder="One per line"></textarea></label>
+        </fieldset>
+        <fieldset class="card glass">
+          <legend>Languages</legend>
+          <label><textarea name="languages" rows="3" placeholder="e.g. English (Native), Spanish (Fluent)"></textarea></label>
+        </fieldset>
+      </form>
+    </section>
+    
+    <!-- TEMPLATES -->
+    <section id="templates" class="section reveal">
+      <div class="section-head">
+        <h2>Templates</h2>
+        <p>Switch styles instantly — your content stays the same.</p>
+      </div>
+      <div class="template-picker">
+        <button class="template-thumb active" data-template="modern">
+          <div class="thumb thumb-modern"></div>
+          <span>Modern</span>
+        </button>
+        <button class="template-thumb" data-template="classic">
+          <div class="thumb thumb-classic"></div>
+          <span>Classic</span>
+        </button>
+        <button class="template-thumb" data-template="minimal">
+          <div class="thumb thumb-minimal"></div>
+          <span>Minimal</span>
+        </button>
+        <button class="template-thumb" data-template="bold">
+          <div class="thumb thumb-bold"></div>
+          <span>Bold</span>
+        </button>
+      </div>
+    </section>
+    
+    <!-- PREVIEW -->
+    <section id="preview" class="section reveal">
+      <div class="section-head">
+        <h2>Live Preview</h2>
+        <p>Looks exactly how it'll print.</p>
+      </div>
+      <div class="preview-wrap glass">
+        <div id="resumePreview" class="resume resume--modern">
+          
+          <!-- rendered by JS -->
+        </div>
+      </div>
+      <div id="download" class="download-row">
+        <button id="downloadPdf" class="btn btn-primary">⬇ Download PDF</button>
+        <button id="printResume" class="btn btn-ghost">🖨 Print Resume</button>
+        <button id="clearData" class="btn btn-danger">Clear All Data</button>
+      </div>
+    </section>
+    
+    <!-- CONTACT -->
+    <section id="contact" class="section reveal">
+      <div class="section-head">
+        <h2>Contact</h2>
+        <p>Questions, feedback, or partnership ideas — we'd love to hear from you.</p>
+      </div>
+      <div class="contact-grid">
+        <form class="card glass" id="contactForm">
+          <label>Name<input type="text" name="cname" required /></label>
+          <label>Email<input type="email" name="cemail" required /></label>
+          <label>Message<textarea name="cmsg" rows="5" required></textarea></label>
+          <button class="btn btn-primary" type="submit">Send Message</button>
+        </form>
+        <div class="card glass contact-side">
+          <h3>Reach us</h3>
+          <p>hello@resumeforge.ai</p>
+          <div class="socials">
+            <a href="#" aria-label="Twitter">𝕏</a>
+            <a href="#" aria-label="LinkedIn">in</a>
+            <a href="#" aria-label="GitHub">gh</a>
+            <a href="#" aria-label="Dribbble">●</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© <span id="year"></span> ResumeForge. Crafted with care.</span>
+      <div class="footer-links">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#builder">Builder</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+  <script src="script.js" defer></script>
+</body>
+</html>
